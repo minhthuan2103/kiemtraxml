@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Viewer - Kiểm tra dữ liệu 4750</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Thư viện XLSX hỗ trợ style (màu sắc) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="buttonHoldingPen" style="display: none;">
+        <button id="exportXlsxButton" class="export-button">Xuất file XLSX</button>
+    </div>
+    <div class="container">
+        <header>
+            <div style="position: relative;">
+                <h1>Ứng dụng xem và kiểm tra dữ liệu XML theo Quyết định 4750/QĐ-BYT</h1>
+                <button id="helpButton" class="help-button">Hướng dẫn sử dụng</button>
+            </div>
+        </header>
+
+        <section class="controls" aria-labelledby="controls-heading">
+            <h2 id="controls-heading" class="sr-only">Điều khiển hiển thị dữ liệu</h2>
+            <div class="control-group">
+                <label for="xmlFileInput">Chọn (các) file XML 4750:</label>
+                <input type="file" id="xmlFileInput" accept=".xml,text/xml" multiple>
+            </div>
+
+            <div id="progressContainer" class="progress-container" hidden>
+                <label for="progressBar" id="progressLabel">Đang xử lý...</label>
+                <progress id="progressBar" max="100" value="0"></progress>
+            </div>
+        </section>
+        
+        <section class="analysis-section" aria-labelledby="analysis-heading">
+            <h2 id="analysis-heading">Kiểm tra dữ liệu</h2>
+            
+            <div id="analysisSummaryContainer">
+                <!-- Summary will be injected here by JS -->
+            </div>
+            
+            <div class="control-group" id="analysisSelectorContainer" hidden>
+                 <label for="analysisTypeSelector">Xem chi tiết kết quả phân tích:</label>
+                 <select id="analysisTypeSelector">
+                     <option value="">-- Vui lòng chọn một phân tích --</option>
+                 </select>
+            </div>
+
+            <div id="analysisResultContainer" class="table-container" aria-live="polite">
+                <p>Kết quả phân tích sẽ được hiển thị ở đây.</p>
+            </div>
+        </section>
+
+        <details class="data-viewer-details">
+            <summary>Xem chi tiết dữ liệu XML (Tùy chọn)</summary>
+            <div class="data-viewer-content">
+                <div class="control-group">
+                    <label for="xmlTypeSelector">Chọn loại dữ liệu XML để hiển thị:</label>
+                    <select id="xmlTypeSelector" aria-label="Chọn loại dữ liệu XML">
+                        <option value="">-- Vui lòng chọn file XML trước --</option>
+                    </select>
+                </div>
+
+                <section class="table-container" aria-live="polite">
+                    <h2 id="table-heading" class="sr-only">Bảng dữ liệu đã chọn</h2>
+                    <div id="dataTableContainer">
+                        <p>Chưa có dữ liệu để hiển thị. Vui lòng tải lên một file XML và chọn loại dữ liệu.</p>
+                    </div>
+                </section>
+            </div>
+        </details>
+        
+        <footer>
+            <p>Ứng dụng xem XML nội bộ</p>
+        </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeHelpModal">&times;</span>
+            <h2>Hướng dẫn Xuất & Kiểm tra dữ liệu XML</h2>
+            <div class="help-body">
+                <h3>Bước 1: Xuất dữ liệu từ phần mềm HIS</h3>
+                <p>Thực hiện trên giao diện xuất XML của phần mềm HIS:</p>
+                <ul>
+                    <li><strong>Thời gian:</strong> Chọn khoảng <em>Từ ngày - Đến ngày</em> cần kiểm tra.</li>
+                    <li><strong>Loại khám bệnh:</strong> Chọn loại hồ sơ cần kiểm tra:
+                        <ul>
+                            <li><em>Ngoại trú</em> (Khám bệnh ngoại trú)</li>
+                            <li><em>Nội trú</em> (BANT - Bệnh án nội trú)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Quan trọng:</strong> Bắt buộc tích chọn vào ô <strong>"Mã hoá"</strong>. <br>
+                    <small>(Phần mềm này xử lý file XML có nội dung được mã hóa Base64 theo quy định).</small></li>
+                    <li>Nhấn nút <strong>Xuất XML</strong> để tải file về máy tính.</li>
+                </ul>
+
+                <h3>Bước 2: Kiểm tra trên phần mềm này</h3>
+                <ul>
+                    <li>Nhấn vào nút <strong>"Chọn (các) file XML"</strong> ở phía trên.</li>
+                    <li>Chọn các file XML vừa tải về (Hệ thống hỗ trợ chọn nhiều file cùng lúc).</li>
+                    <li>Xem bảng <strong>"Báo cáo tổng hợp kết quả phân tích"</strong> để phát hiện các lỗi sai về thời gian, mã máy, v.v.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
