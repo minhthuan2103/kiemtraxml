@@ -1,9 +1,15 @@
-// --- CONSTANTS ---
+
+/**
+ * XML Viewer Bundle
+ * Combined logic from constants, utils, xmlProcessor, uiManager, and app
+ */
+
+// --- Constants ---
 const XML_DEFINITIONS = {
     "XML1": {
         displayName: "XML1. Chỉ tiêu tổng hợp khám bệnh, chữa bệnh",
         innerXmlRootTag: "TONG_HOP",
-        recordTag: "TONG_HOP", 
+        recordTag: "TONG_HOP",
         isSingleRecord: true,
         fields: ["MA_LK", "STT", "MA_BN", "HO_TEN", "SO_CCCD", "NGAY_SINH", "GIOI_TINH", "NHOM_MAU", "MA_QUOCTICH", "MA_DANTOC", "MA_NGHE_NGHIEP", "DIA_CHI", "MATINH_CU_TRU", "MAHUYEN_CU_TRU", "MAXA_CU_TRU", "DIEN_THOAI", "MA_THE_BHYT", "MA_DKBD", "GT_THE_TU", "GT_THE_DEN", "NGAY_MIEN_CCT", "LY_DO_VV", "LY_DO_VNT", "MA_LY_DO_VNT", "CHAN_DOAN_VAO", "CHAN_DOAN_RV", "MA_BENH_CHINH", "MA_BENH_KT", "MA_BENH_YHCT", "MA_PTTT_QT", "MA_DOITUONG_KCB", "MA_NOI_DI", "MA_NOI_DEN", "MA_TAI_NAN", "NGAY_VAO", "NGAY_VAO_NOI_TRU", "NGAY_RA", "GIAY_CHUYEN_TUYEN", "SO_NGAY_DTRI", "PP_DIEU_TRI", "KET_QUA_DTRI", "MA_LOAI_RV", "GHI_CHU", "NGAY_TTOAN", "T_THUOC", "T_VTYT", "T_TONGCHI_BV", "T_TONGCHI_BH", "T_BNTT", "T_BNCCT", "T_BHTT", "T_BHTT_GDV", "T_NGUONKHAC", "NAM_QT", "THANG_QT", "MA_LOAI_KCB", "MA_KHOA", "MA_CSKCB", "MA_KHUVUC", "CAN_NANG", "CAN_NANG_CON", "NAM_NAM_LIEN_TUC", "NGAY_TAI_KHAM", "MA_HSBA", "MA_TTDV", "DU_PHONG"]
     },
@@ -77,7 +83,7 @@ const XML_DEFINITIONS = {
         isSingleRecord: true,
         fields: ["MA_LK", "SO_CT", "SO_SERI", "SO_KCB", "DON_VI", "MA_BHXH", "MA_THE_BHYT", "CHAN_DOAN_RV", "PP_DIEUTRI", "MA_DINH_CHI_THAI", "NGUYENNHAN_DINHCHI", "TUOI_THAI", "SO_NGAY_NGHI", "TU_NGAY", "DEN_NGAY", "HO_TEN_CHA", "HO_TEN_ME", "MA_TTDV", "MA_BS", "NGAY_CT", "MA_THE_TAM", "MAU_SO", "DU_PHONG"]
     },
-    "XML13": { 
+    "XML13": {
         displayName: "XML13. Chỉ tiêu dữ liệu giấy chuyển tuyến",
         innerXmlRootTag: "CHI_TIEU_GIAYCHUYENTUYEN",
         recordTag: "CHI_TIEU_GIAYCHUYENTUYEN",
@@ -113,7 +119,7 @@ const MA_LOAI_KCB_MAP = {
     '10': 'Các trường hợp khác'
 };
 
-// --- UTILS ---
+// --- Utils ---
 const Utils = {
     base64ToUtf8(str) {
         try {
@@ -186,7 +192,7 @@ const Utils = {
     }
 };
 
-// --- XML PROCESSOR ---
+// --- XmlProcessor ---
 const XmlProcessor = {
     extractRecordsFromInnerXml(decodedXmlString, definition) {
         const parser = new DOMParser();
@@ -307,10 +313,10 @@ const XmlProcessor = {
         }
         
         return { groupedRecords, processedCount: files.length - invalidFileCount, invalidFileCount };
-    }
+    },
 };
 
-// --- UI MANAGER ---
+// --- UIManager ---
 const DATE_FIELDS = new Set([
     "NGAY_SINH", "GT_THE_TU", "GT_THE_DEN", "NGAY_MIEN_CCT", "NGAY_VAO", "NGAY_VAO_NOI_TRU", 
     "NGAY_RA", "NGAY_TTOAN", "NGAY_TAI_KHAM", "NGAY_YL", "NGAY_TH_YL", "NGAY_KQ", "NGAYKD_HIV", 
@@ -341,7 +347,6 @@ class UIManager {
         this.analysisSelectorContainer = document.getElementById('analysisSelectorContainer');
         this.analysisTypeSelector = document.getElementById('analysisTypeSelector');
 
-        // Help Modal elements
         this.helpButton = document.getElementById('helpButton');
         this.helpModal = document.getElementById('helpModal');
         this.closeHelpModal = document.getElementById('closeHelpModal');
@@ -351,6 +356,11 @@ class UIManager {
         this.currentTableDefinition = null;
         this.currentSortKey = null;
         this.currentSortDirection = 'asc';
+
+        // Pagination State
+        this.currentPage = 1;
+        this.pageSize = 5; 
+        this.paginationContainer = null;
     }
 
     addEventListeners(handlers) {
@@ -385,6 +395,7 @@ class UIManager {
 
         container.innerHTML = `<p class="${type}-message">${message}</p>`;
         this.currentTableElement = null;
+        this.paginationContainer = null;
     }
     
     resetAnalysisView() {
@@ -467,6 +478,7 @@ class UIManager {
         this.analysisSelectorContainer.hidden = false;
     }
 
+
     populateTypeSelector(data) {
         this.typeSelector.innerHTML = '<option value="">-- Vui lòng chọn file XML trước --</option>';
         if (data.size > 0) {
@@ -527,16 +539,19 @@ class UIManager {
             this.currentSortDirection = 'asc';
         }
         
-        this._rerenderTableBodyAndHeader();
+        // Reset to page 1 when sorting changes
+        this.currentPage = 1;
+        this._updateTableContent();
     }
 
-    _rerenderTableBodyAndHeader() {
+    _updateTableContent() {
         if (!this.currentTableElement || !this.currentTableRecords || !this.currentTableDefinition) return;
     
         const thead = this.currentTableElement.querySelector('thead');
         const tbody = this.currentTableElement.querySelector('tbody');
         if (!tbody || !thead) return;
     
+        // Update header classes for sort indicators
         thead.querySelectorAll('th').forEach(th => {
             th.classList.remove('sorted-asc', 'sorted-desc');
             if (th.dataset.column === this.currentSortKey) {
@@ -544,15 +559,30 @@ class UIManager {
             }
         });
     
-        const sortedRecords = this._sortRecords(this.currentTableRecords, this.currentSortKey, this.currentSortDirection);
+        // 1. Sort Records (Globally)
+        const sortedRecords = (this.currentSortKey) 
+            ? this._sortRecords(this.currentTableRecords, this.currentSortKey, this.currentSortDirection)
+            : this.currentTableRecords;
         
+        // 2. Paginate
+        const totalRecords = sortedRecords.length;
+        const totalPages = Math.ceil(totalRecords / this.pageSize);
+        if (this.currentPage > totalPages && totalPages > 0) this.currentPage = totalPages;
+        if (this.currentPage < 1) this.currentPage = 1;
+
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        const endIndex = Math.min(startIndex + this.pageSize, totalRecords);
+        const recordsToShow = sortedRecords.slice(startIndex, endIndex);
+
+        // 3. Render Body
         tbody.innerHTML = ''; 
         
-        sortedRecords.forEach((record, index) => {
+        recordsToShow.forEach((record, index) => {
             const tr = document.createElement('tr');
             
+            // Calculate global STT
             const sttTd = document.createElement('td');
-            sttTd.textContent = (index + 1).toString();
+            sttTd.textContent = (startIndex + index + 1).toString();
             tr.appendChild(sttTd);
     
             this.currentTableDefinition.fields.forEach(header => {
@@ -572,17 +602,100 @@ class UIManager {
             });
             tbody.appendChild(tr);
         });
+
+        // 4. Update Pagination Controls
+        this._updatePaginationUI(startIndex, endIndex, totalRecords, totalPages);
+    }
+
+    _updatePaginationUI(startIndex, endIndex, totalRecords, totalPages) {
+        if (!this.paginationContainer) return;
+
+        const infoSpan = this.paginationContainer.querySelector('.pagination-info');
+        const prevBtn = this.paginationContainer.querySelector('#prevPageBtn');
+        const nextBtn = this.paginationContainer.querySelector('#nextPageBtn');
+
+        if (infoSpan) {
+            infoSpan.textContent = `Hiển thị ${totalRecords > 0 ? startIndex + 1 : 0} đến ${endIndex} trong số ${totalRecords} bản ghi`;
+        }
+
+        if (prevBtn) prevBtn.disabled = this.currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = this.currentPage >= totalPages;
+    }
+
+    _renderPaginationControls(container) {
+        this.paginationContainer = document.createElement('div');
+        this.paginationContainer.className = 'pagination-container';
+        
+        // Page Size Selector
+        const leftControls = document.createElement('div');
+        leftControls.className = 'page-size-selector';
+        leftControls.innerHTML = `<label>Hiển thị: 
+            <select id="pageSizeSelect">
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+            </select> dòng</label>`;
+        
+        const pageSizeSelect = leftControls.querySelector('#pageSizeSelect');
+        pageSizeSelect.value = this.pageSize.toString();
+        pageSizeSelect.addEventListener('change', (e) => {
+            this.pageSize = parseInt(e.target.value, 10);
+            this.currentPage = 1; // Reset to page 1
+            this._updateTableContent();
+        });
+
+        // Info Text
+        const infoSpan = document.createElement('span');
+        infoSpan.className = 'pagination-info';
+        
+        // Buttons
+        const rightControls = document.createElement('div');
+        rightControls.className = 'pagination-controls';
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.id = 'prevPageBtn';
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = 'Trước';
+        prevBtn.addEventListener('click', () => {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this._updateTableContent();
+            }
+        });
+
+        const nextBtn = document.createElement('button');
+        nextBtn.id = 'nextPageBtn';
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = 'Sau';
+        nextBtn.addEventListener('click', () => {
+             this.currentPage++;
+             this._updateTableContent();
+        });
+
+        rightControls.appendChild(prevBtn);
+        rightControls.appendChild(nextBtn);
+
+        this.paginationContainer.appendChild(leftControls);
+        this.paginationContainer.appendChild(infoSpan);
+        this.paginationContainer.appendChild(rightControls);
+
+        container.appendChild(this.paginationContainer);
     }
 
     renderTable(records, definition, container, showExportButton = false) {
         this.currentSortKey = null;
         this.currentSortDirection = 'asc';
+        this.currentPage = 1;
         this.currentTableRecords = records;
         this.currentTableDefinition = definition;
 
         if (!records || records.length === 0) {
             this.displayMessage(container, `Không có dữ liệu cho: ${definition.displayName}`);
             this.currentTableElement = null;
+            this.paginationContainer = null;
             return;
         }
 
@@ -630,29 +743,11 @@ class UIManager {
 
         thead.addEventListener('click', this._handleSort.bind(this));
 
-        records.forEach((record, index) => {
-            const tr = document.createElement('tr');
-            const sttTd = document.createElement('td');
-            sttTd.textContent = (index + 1).toString();
-            tr.appendChild(sttTd);
+        // Create Pagination Controls
+        this._renderPaginationControls(container);
 
-            definition.fields.forEach(header => {
-                const td = document.createElement('td');
-                let cellValue = record[header] || '';
-                
-                if (DATE_FIELDS.has(header)) {
-                    cellValue = Utils.formatDisplayDate(cellValue);
-                } else if (NUMERIC_FIELDS.has(header)) {
-                    const num = parseFloat(cellValue);
-                    if (!isNaN(num)) {
-                        cellValue = num.toLocaleString('vi-VN');
-                    }
-                }
-                td.textContent = cellValue;
-                tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-        });
+        // Render Initial Content
+        this._updateTableContent();
     }
     
     showProgress(total, label) {
@@ -681,6 +776,8 @@ class UIManager {
             return;
         }
     
+        // Use the currently sorted records if a sort is active.
+        // IMPORTANT: Export ALL sorted records, not just the current page slice!
         const recordsToExport = (this.currentSortKey)
             ? this._sortRecords(this.currentTableRecords, this.currentSortKey, this.currentSortDirection)
             : this.currentTableRecords;
@@ -774,7 +871,7 @@ class UIManager {
     }
 }
 
-// --- APP ---
+// --- App ---
 class App {
     constructor() {
         this.ui = new UIManager();
@@ -825,7 +922,7 @@ class App {
             return;
         }
 
-        const files = Array.from(target.files || []);
+        const files = Array.from(target.files);
         const totalFiles = files.length;
         this.ui.showProgress(totalFiles, `Chuẩn bị xử lý ${totalFiles} file...`);
         this.ui.displayMessage(this.ui.dataTableContainer, 'Bắt đầu quá trình xử lý file...');
@@ -1099,6 +1196,7 @@ class App {
             return null;
         };
 
+        // XML2 - Check NGAY_YL (Order Date)
         xml2Recs.forEach(rec => {
              const maLk = rec.MA_LK;
              const nYl = rec.NGAY_YL || '';
@@ -1126,6 +1224,7 @@ class App {
              }
         });
 
+        // XML3 - Check NGAY_YL, NGAY_TH_YL, NGAY_KQ
         xml3Recs.forEach(rec => {
              const maLk = rec.MA_LK;
              const nYl = rec.NGAY_YL || '';
@@ -1290,7 +1389,6 @@ class App {
                                 NGAY_TH_YL: ngayThYlStr,
                                 NGAY_KQ: ngayKqStr,
                                 THOI_GIAN_TH_KQ_PHUT: timeDiffMinutes.toString(),
-                                XML2_NGAY_YL_MIN: '', 
                                 NGAY_RA: xml1Rec["NGAY_RA"] || ''
                             });
                         }
@@ -1331,7 +1429,7 @@ class App {
     }
 }
 
-// --- INIT ---
+// --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
     const app = new App();
     app.init();

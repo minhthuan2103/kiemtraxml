@@ -1,0 +1,571 @@
+
+/* --- Variables for modern theme --- */
+:root {
+    --primary-color: #4A5568; /* A cool, dark gray-blue */
+    --primary-color-hover: #2D3748;
+    --accent-color: #5A67D8; /* A nice indigo for highlights/progress */
+    --accent-color-light: #EBF4FF;
+    --background-color: #F7FAFC;
+    --container-bg-color: #FFFFFF;
+    --text-color: #2D3748;
+    --text-color-light: #718096;
+    --border-color: #E2E8F0;
+    --success-color: #38A169;
+    --success-color-hover: #2F855A;
+    --error-bg-color: #FFF5F5;
+    --error-border-color: #FEB2B2;
+    --error-text-color: #C53030;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* --- Basic Reset & Body --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    padding: 2rem; /* Use rem for scalability */
+}
+
+/* --- Layout & Container --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--container-bg-color);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 1.8em;
+    font-weight: 600;
+}
+
+.help-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s;
+}
+
+.help-button:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* --- Sections & Cards --- */
+.controls, .analysis-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background-color: var(--container-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.analysis-section h2 {
+    font-size: 1.5em;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* --- Form Controls --- */
+.control-group {
+    margin-bottom: 1.25rem;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+
+/* Common style for inputs, selects, buttons */
+.control-group input[type="file"],
+.control-group select,
+.control-group button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1em;
+    background-color: var(--container-bg-color);
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Focus styles */
+.control-group input[type="file"]:focus,
+.control-group select:focus,
+.control-group button:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.3);
+}
+
+/* Custom File Input */
+.control-group input[type="file"] {
+    cursor: pointer;
+    color: var(--text-color-light);
+}
+.control-group input[type="file"]::file-selector-button {
+  display: none;
+}
+
+
+/* Buttons */
+.control-group button {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    border-color: var(--primary-color);
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.control-group button:hover:not(:disabled) {
+    background-color: var(--primary-color-hover);
+    transform: translateY(-1px); /* Subtle lift */
+}
+
+.control-group button:disabled {
+    background-color: #CBD5E0; /* A lighter gray for disabled */
+    border-color: #CBD5E0;
+    color: #A0AEC0;
+    cursor: not-allowed;
+}
+
+/* --- Progress Bar --- */
+.progress-container {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#progressLabel {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+
+progress {
+    width: 100%;
+    height: 10px;
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+    background-color: var(--border-color);
+    border-radius: 5px;
+}
+
+progress::-webkit-progress-value {
+    background-color: var(--accent-color);
+    transition: width 0.1s linear;
+}
+
+progress::-moz-progress-bar {
+    background-color: var(--accent-color);
+    border-radius: 5px;
+}
+
+/* --- Table & Data Display --- */
+.table-container {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+}
+
+.table-container::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Placeholder text */
+#dataTableContainer p, #analysisResultContainer p {
+    padding: 2rem 1rem;
+    text-align: center;
+    background-color: #F7FAFC;
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color-light);
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 1rem;
+}
+
+.table-header .visible-heading {
+    margin-bottom: 0;
+}
+
+.visible-heading {
+    font-size: 1.2em;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+table {
+    width: 100%; 
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9em;
+    table-layout: auto; /* Allow columns to resize based on content */
+}
+
+table th,
+table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    overflow-wrap: break-word; /* Wrap long unbreakable strings */
+    word-wrap: break-word; /* Fallback for older browsers */
+}
+
+/* Specific styling for the STT (first) column */
+table th:first-child,
+table td:first-child {
+    width: 60px; /* A smaller, fixed width for the sequence number column */
+    text-align: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+table th {
+    background-color: #F7FAFC; /* Lighter header */
+    color: var(--text-color);
+    font-weight: 600;
+    text-transform: none; /* More readable */
+    letter-spacing: 0.5px;
+    /* white-space: nowrap; */ /* Removed to allow wrapping */
+    border-bottom-width: 2px;
+    position: relative; /* For positioning the sort arrow */
+    cursor: pointer;
+    user-select: none; /* Prevent text selection on click */
+}
+
+/* Sort arrow indicators */
+table th:not(:first-child)::after {
+    content: ' ';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    opacity: 0.3;
+}
+table th:not(:first-child):hover::after {
+    opacity: 0.7;
+}
+
+table th.sorted-asc::after {
+    content: ' ';
+    border-bottom: 5px solid var(--primary-color);
+    opacity: 1;
+}
+
+table th.sorted-desc::after {
+    content: ' ';
+    border-top: 5px solid var(--primary-color);
+    opacity: 1;
+}
+
+
+table tbody tr:hover {
+    background-color: var(--accent-color-light);
+}
+
+/* --- Pagination Controls --- */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.page-btn {
+    padding: 0.4rem 0.8rem;
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: var(--accent-color-light);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.page-btn:disabled {
+    background-color: #F7FAFC;
+    color: #CBD5E0;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+
+.page-size-selector label {
+    font-size: 0.9em;
+    color: var(--text-color);
+}
+
+.page-size-selector select {
+    padding: 0.3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    background-color: #fff;
+    width: auto; /* Override default 100% width */
+    margin: 0 0.5rem;
+}
+
+/* --- Export Button --- */
+.export-button {
+    /* float: right; */ /* Removed */
+    /* margin-bottom: 1rem; */ /* Removed */
+    padding: 0.6rem 1.2rem;
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.export-button:hover:not(:disabled) {
+    background-color: var(--success-color-hover);
+    transform: translateY(-1px);
+}
+
+.export-button:disabled {
+    background-color: #CBD5E0;
+    cursor: not-allowed;
+}
+
+/* --- Collapsible Data Viewer --- */
+.data-viewer-details {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: #FDFEFE; /* Slightly off-white to de-emphasize */
+}
+
+.data-viewer-details summary {
+    padding: 1rem 1.5rem;
+    padding-left: 2.5rem; /* Make space for arrow */
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-color-light);
+    list-style: none; /* Remove default marker */
+    position: relative;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 7px; /* For hover effect */
+}
+
+.data-viewer-details summary:hover {
+    background-color: #EDF2F7;
+}
+
+.data-viewer-details summary::-webkit-details-marker {
+    display: none; /* Hide default marker in Safari */
+}
+
+.data-viewer-details summary::before {
+    content: '►';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    font-size: 0.8em;
+    transform: translateY(-50%) rotate(0);
+    transition: transform 0.2s ease-in-out;
+}
+
+.data-viewer-details[open] > summary::before {
+    transform: translateY(-50%) rotate(90deg);
+}
+
+.data-viewer-details .data-viewer-content {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.data-viewer-content .table-container {
+    margin-top: 0; /* Override default margin since parent has padding */
+}
+
+
+/* --- Footer --- */
+footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+
+/* --- Utility & Accessibility --- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Message states */
+.info-message, .error-message, .success-message { /* Combined base style */
+    padding: 1rem;
+    margin-top: 0.5rem;
+    border-radius: 6px;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.info-message {
+    background-color: var(--accent-color-light);
+    border-color: #BEE3F8;
+    color: #2B6CB0;
+}
+
+.error-message {
+    background-color: var(--error-bg-color);
+    border-color: var(--error-border-color);
+    color: var(--error-text-color);
+}
+
+.success-message {
+    background-color: #F0FFF4;
+    border-color: #C6F6D5;
+    color: #2F855A;
+}
+
+/* --- Modal Styles --- */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.5); 
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; 
+    padding: 2rem;
+    border: 1px solid #888;
+    width: 80%; 
+    max-width: 700px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    right: 1.5rem;
+    top: 1rem;
+    line-height: 1;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--text-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.help-body h3 {
+    color: var(--primary-color);
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 2px solid var(--accent-color-light);
+    padding-bottom: 0.3rem;
+    display: inline-block;
+}
+.help-body ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+.help-body li {
+    margin-bottom: 0.5rem;
+}

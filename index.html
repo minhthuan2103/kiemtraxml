@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XML Viewer - Kiểm tra dữ liệu 4750</title>
-    <link rel="stylesheet" href="index.css">
-    <!-- Thư viện XLSX hỗ trợ style (màu sắc) -->
+    <title>XML Viewer (Offline)</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Thư viện Excel hỗ trợ định dạng màu sắc -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div id="buttonHoldingPen" style="display: none;">
@@ -15,7 +14,7 @@
     </div>
     <div class="container">
         <header>
-            <div style="position: relative;">
+            <div class="header-content">
                 <h1>Ứng dụng xem và kiểm tra dữ liệu XML theo Quyết định 4750/QĐ-BYT</h1>
                 <button id="helpButton" class="help-button">Hướng dẫn sử dụng</button>
             </div>
@@ -109,6 +108,5 @@
     </div>
 
     <script src="script.js"></script>
-<script type="module" src="/index.tsx"></script>
 </body>
 </html>
