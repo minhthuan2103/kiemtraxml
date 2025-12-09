@@ -1,4 +1,5 @@
 
+
 /* --- Variables for modern theme --- */
 :root {
     --primary-color: #4A5568; /* A cool, dark gray-blue */
@@ -50,16 +51,24 @@ header {
     border-bottom: 1px solid var(--border-color);
 }
 
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+
 header h1 {
     color: var(--primary-color);
     font-size: 1.8em;
     font-weight: 600;
+    padding: 0;
 }
 
 .help-button {
-    position: absolute;
-    top: 0;
-    right: 0;
+    /* Mobile styles: static position */
+    position: static;
     background-color: transparent;
     border: 1px solid var(--accent-color);
     color: var(--accent-color);
@@ -68,6 +77,24 @@ header h1 {
     cursor: pointer;
     font-size: 0.9em;
     transition: all 0.2s;
+}
+
+/* Desktop Styles */
+@media (min-width: 768px) {
+    .header-content {
+        display: block;
+    }
+
+    header h1 {
+        /* Add padding to prevent text from overlapping with the absolute button */
+        padding: 0 150px;
+    }
+
+    .help-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
 }
 
 .help-button:hover {
@@ -204,7 +231,18 @@ progress::-moz-progress-bar {
 /* --- Table & Data Display --- */
 .table-container {
     margin-top: 1.5rem;
+    /* overflow-x: auto;  REMOVED: Managed by inner wrapper now */
+}
+
+.table-scroll-wrapper {
     overflow-x: auto;
+    width: 100%;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: #fff;
+    max-height: 70vh; /* Optional: limit height for vertical scrolling too */
+    overflow-y: auto;
 }
 
 .table-container::after {
@@ -246,7 +284,7 @@ progress::-moz-progress-bar {
 table {
     width: 100%; 
     border-collapse: collapse;
-    margin: 1rem 0;
+    margin: 0; /* Remove margin as it's inside wrapper */
     font-size: 0.9em;
     table-layout: auto; /* Allow columns to resize based on content */
 }
@@ -258,6 +296,7 @@ table td {
     border-bottom: 1px solid var(--border-color);
     overflow-wrap: break-word; /* Wrap long unbreakable strings */
     word-wrap: break-word; /* Fallback for older browsers */
+    white-space: nowrap; /* Prevent wrapping for cleaner table rows */
 }
 
 /* Specific styling for the STT (first) column */
@@ -267,19 +306,42 @@ table td:first-child {
     text-align: center;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+    position: sticky;
+    left: 0;
+    z-index: 11;
+    background-color: #F7FAFC; /* Match header or even row color */
+}
+table tbody tr:nth-child(even) td:first-child {
+    background-color: #F7FAFC; /* Match even row color */
+}
+table tbody tr:nth-child(odd) td:first-child {
+    background-color: #FFFFFF; /* Match odd row color */
 }
 
+
 table th {
-    background-color: #F7FAFC; /* Lighter header */
+    background-color: #EDF2F7; /* Slightly darker header */
     color: var(--text-color);
     font-weight: 600;
     text-transform: none; /* More readable */
     letter-spacing: 0.5px;
-    /* white-space: nowrap; */ /* Removed to allow wrapping */
     border-bottom-width: 2px;
-    position: relative; /* For positioning the sort arrow */
     cursor: pointer;
     user-select: none; /* Prevent text selection on click */
+    
+    /* Sticky Header */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 0 var(--border-color);
+}
+
+/* Ensure sticky STT header sits on top of sticky column headers if needed, 
+   but usually z-index 11 on th:first-child covers it. 
+*/
+table th:first-child {
+    z-index: 12; 
+    background-color: #EDF2F7;
 }
 
 /* Sort arrow indicators */
@@ -311,9 +373,24 @@ table th.sorted-desc::after {
     opacity: 1;
 }
 
+/* Striped Rows */
+table tbody tr:nth-child(even) {
+    background-color: #F7FAFC;
+}
 
 table tbody tr:hover {
-    background-color: var(--accent-color-light);
+    background-color: var(--accent-color-light) !important;
+}
+
+/* Interactive Summary Rows */
+.clickable-summary-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-summary-row:hover {
+    background-color: var(--accent-color-light) !important;
+    font-weight: 500;
 }
 
 /* --- Pagination Controls --- */
@@ -321,9 +398,11 @@ table tbody tr:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+    background-color: #F7FAFC;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
     flex-wrap: wrap;
     gap: 1rem;
 }
@@ -342,38 +421,47 @@ table tbody tr:hover {
     cursor: pointer;
     color: var(--text-color);
     transition: all 0.2s;
+    min-width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .page-btn:hover:not(:disabled) {
-    background-color: var(--accent-color-light);
+    background-color: var(--accent-color);
     border-color: var(--accent-color);
-    color: var(--accent-color);
+    color: white;
 }
 
 .page-btn:disabled {
-    background-color: #F7FAFC;
+    background-color: #F1F5F9;
     color: #CBD5E0;
     cursor: not-allowed;
+    border-color: #E2E8F0;
 }
 
 .pagination-info {
     font-size: 0.9em;
-    color: var(--text-color-light);
+    color: var(--text-color);
+    font-weight: 500;
 }
 
 .page-size-selector label {
     font-size: 0.9em;
     color: var(--text-color);
+    display: flex;
+    align-items: center;
 }
 
 .page-size-selector select {
-    padding: 0.3rem;
+    padding: 0.3rem 0.5rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     color: var(--text-color);
     background-color: #fff;
     width: auto; /* Override default 100% width */
     margin: 0 0.5rem;
+    cursor: pointer;
 }
 
 /* --- Export Button --- */
